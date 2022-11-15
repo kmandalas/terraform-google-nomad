@@ -24,3 +24,4 @@ vendor
 
 # Other
 .private
+/tfvars
