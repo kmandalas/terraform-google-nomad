@@ -1,22 +1,13 @@
 {
   "min_packer_version": "1.0.4",
   "variables": {
-    "project_id": "",
-    "zone": "",
-    "nomad_version": "0.9.3",
+    "project_id": "graalvm-346908",
+    "zone": "europe-west1-b",
+    "nomad_version": "1.1.0",
     "consul_module_version": "v0.4.0",
-    "consul_version": "1.5.1"
+    "consul_version": "1.13.2"
   },
   "builders": [{
-    "name": "ubuntu16-image",
-    "type": "googlecompute",
-    "image_name": "nomad-consul-ubuntu16-{{isotime \"2006-01-02-030405\"}}",
-    "image_family": "nomad-consul",
-    "project_id": "{{user `project_id`}}",
-    "source_image_family": "ubuntu-1604-lts",
-    "zone": "{{user `zone`}}",
-    "ssh_username": "ubuntu"
-  },{
     "name": "ubuntu18-image",
     "type": "googlecompute",
     "image_name": "nomad-consul-ubuntu18-{{isotime \"2006-01-02-030405\"}}",
@@ -28,16 +19,25 @@
   }],
   "provisioners": [{
     "type": "shell",
-    "inline": ["mkdir -p /tmp/terraform-google-nomad/modules"]
+    "inline": [
+      "mkdir -p /tmp/terraform-google-nomad/modules",
+      "echo tmp directory created"
+    ]
   },{
     "type": "file",
     "source": "{{template_dir}}/../../modules/",
     "destination": "/tmp/terraform-google-nomad/modules",
-    "pause_before": "30s"
+    "pause_before": "15s"
   },{
+    "pause_before": "15s",
     "type": "shell",
     "inline": [
-      "/tmp/terraform-google-nomad/modules/install-nomad/install-nomad --version {{user `nomad_version`}}"
+      "cd /tmp/terraform-google-nomad/modules/install-nomad/",
+      "pwd",
+      "ls -ltr",
+      "chmod +x install-nomad.sh",
+      "ls -ltr",
+      "sudo ./install-nomad.sh --version {{user `nomad_version`}}"
     ]
   },{
     "type": "shell",
@@ -56,6 +56,13 @@
     "inline": [
       "git clone --branch {{user `consul_module_version`}} https://github.com/hashicorp/terraform-google-consul.git /tmp/terraform-google-consul",
       "/tmp/terraform-google-consul/modules/install-consul/install-consul --version {{user `consul_version`}}"
+    ]
+  },{
+    "type": "shell",
+    "inline": [
+      "cd /tmp/terraform-google-nomad/modules/install-docker/",
+      "chmod +x install-docker.sh",
+      "sudo ./install-docker.sh"
     ]
   }]
 }

@@ -200,6 +200,19 @@ $server_config
 consul {
   address = "127.0.0.1:8500"
 }
+plugin "docker" {
+  config {
+    volumes {
+      enabled = true
+    }
+  }
+}
+
+telemetry {
+  publish_allocation_metrics = true
+  publish_node_metrics       = true
+  prometheus_metrics         = true
+}
 EOF
   chown "$user:$user" "$config_path"
 }
